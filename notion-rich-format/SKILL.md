@@ -13,462 +13,87 @@ Reference guide for creating and formatting Notion pages with rich block types a
 - User wants to format or restructure an existing Notion page
 - User wants to convert plain text or markdown into Notion content
 
+## Contents
+
+- [Block types](#block-types) - Quick reference for all block types
+- [Rich text formatting](#rich-text-formatting) - Annotations, colors, links, mentions
+- [MCP tool usage](#mcp-tool-usage) - How to use the Notion MCP tools
+- [API constraints](#api-constraints) - Limits and restrictions
+
+For detailed JSON examples of all block types, see [blocks-reference.md](blocks-reference.md).
+
 ## Block types
 
-### Paragraph
+### Text blocks
+
+| Type | Key Properties |
+|------|----------------|
+| `paragraph` | `rich_text`, `color` |
+| `heading_1`, `heading_2`, `heading_3` | `rich_text`, `is_toggleable`, `color` |
+| `toggle` | `rich_text`, `color`, `children` |
+| `quote` | `rich_text`, `color` |
+| `callout` | `rich_text`, `icon`, `color` |
+| `code` | `rich_text`, `language`, `caption` |
+
+**Callout icons**: `{ "type": "emoji", "emoji": "💡" }` or `{ "type": "external", "external": { "url": "..." } }`
+
+**Code languages**: `javascript`, `python`, `typescript`, `bash`, `json`, `html`, `css`, `sql`, `markdown`, `yaml`, and [60+ more](blocks-reference.md#code).
+
+### List blocks
+
+| Type | Key Properties |
+|------|----------------|
+| `bulleted_list_item` | `rich_text`, `color`, `children` |
+| `numbered_list_item` | `rich_text`, `color`, `children` |
+| `to_do` | `rich_text`, `checked`, `color` |
+
+### Table blocks
 
 ```json
 {
-  "object": "block",
-  "type": "paragraph",
-  "paragraph": {
-    "rich_text": [{ "type": "text", "text": { "content": "Text here" } }],
-    "color": "default"
-  }
-}
-```
-
-### Headings
-
-Available types: `heading_1`, `heading_2`, `heading_3`
-
-```json
-{
-  "object": "block",
-  "type": "heading_2",
-  "heading_2": {
-    "rich_text": [{ "type": "text", "text": { "content": "Section title" } }],
-    "is_toggleable": true,
-    "color": "default"
-  }
-}
-```
-
-Set `is_toggleable: true` to make the heading collapsible.
-
-### Toggle
-
-```json
-{
-  "object": "block",
-  "type": "toggle",
-  "toggle": {
-    "rich_text": [{ "type": "text", "text": { "content": "Click to expand" } }],
-    "color": "default",
-    "children": [
-      {
-        "object": "block",
-        "type": "paragraph",
-        "paragraph": {
-          "rich_text": [{ "type": "text", "text": { "content": "Hidden content" } }]
-        }
-      }
-    ]
-  }
-}
-```
-
-### Bulleted list item
-
-```json
-{
-  "object": "block",
-  "type": "bulleted_list_item",
-  "bulleted_list_item": {
-    "rich_text": [{ "type": "text", "text": { "content": "List item" } }],
-    "color": "default",
-    "children": []
-  }
-}
-```
-
-### Numbered list item
-
-```json
-{
-  "object": "block",
-  "type": "numbered_list_item",
-  "numbered_list_item": {
-    "rich_text": [{ "type": "text", "text": { "content": "Step one" } }],
-    "color": "default",
-    "children": []
-  }
-}
-```
-
-### To-do
-
-```json
-{
-  "object": "block",
-  "type": "to_do",
-  "to_do": {
-    "rich_text": [{ "type": "text", "text": { "content": "Task" } }],
-    "checked": false,
-    "color": "default"
-  }
-}
-```
-
-### Callout
-
-```json
-{
-  "object": "block",
-  "type": "callout",
-  "callout": {
-    "rich_text": [{ "type": "text", "text": { "content": "Important note" } }],
-    "icon": { "type": "emoji", "emoji": "💡" },
-    "color": "gray_background"
-  }
-}
-```
-
-Icon can be emoji or external image:
-```json
-"icon": { "type": "external", "external": { "url": "https://..." } }
-```
-
-### Quote
-
-```json
-{
-  "object": "block",
-  "type": "quote",
-  "quote": {
-    "rich_text": [{ "type": "text", "text": { "content": "Quoted text" } }],
-    "color": "default"
-  }
-}
-```
-
-### Code
-
-```json
-{
-  "object": "block",
-  "type": "code",
-  "code": {
-    "rich_text": [{ "type": "text", "text": { "content": "const x = 1;" } }],
-    "language": "javascript",
-    "caption": []
-  }
-}
-```
-
-Supported languages: `abap`, `arduino`, `bash`, `basic`, `c`, `clojure`, `coffeescript`, `cpp`, `csharp`, `css`, `dart`, `diff`, `docker`, `elixir`, `elm`, `erlang`, `flow`, `fortran`, `fsharp`, `gherkin`, `glsl`, `go`, `graphql`, `groovy`, `haskell`, `html`, `java`, `javascript`, `json`, `julia`, `kotlin`, `latex`, `less`, `lisp`, `livescript`, `lua`, `makefile`, `markdown`, `markup`, `matlab`, `mermaid`, `nix`, `objective-c`, `ocaml`, `pascal`, `perl`, `php`, `plain text`, `powershell`, `prolog`, `protobuf`, `python`, `r`, `reason`, `ruby`, `rust`, `sass`, `scala`, `scheme`, `scss`, `shell`, `sql`, `swift`, `typescript`, `vb.net`, `verilog`, `vhdl`, `visual basic`, `webassembly`, `xml`, `yaml`, `java/c/c++/c#`
-
-### Divider
-
-```json
-{
-  "object": "block",
-  "type": "divider",
-  "divider": {}
-}
-```
-
-### Table of contents
-
-```json
-{
-  "object": "block",
-  "type": "table_of_contents",
-  "table_of_contents": {
-    "color": "default"
-  }
-}
-```
-
-### Table
-
-Tables require a `table` block with `table_row` children.
-
-```json
-{
-  "object": "block",
   "type": "table",
   "table": {
     "table_width": 3,
     "has_column_header": true,
     "has_row_header": false,
-    "children": [
-      {
-        "object": "block",
-        "type": "table_row",
-        "table_row": {
-          "cells": [
-            [{ "type": "text", "text": { "content": "Column 1" } }],
-            [{ "type": "text", "text": { "content": "Column 2" } }],
-            [{ "type": "text", "text": { "content": "Column 3" } }]
-          ]
-        }
-      },
-      {
-        "object": "block",
-        "type": "table_row",
-        "table_row": {
-          "cells": [
-            [{ "type": "text", "text": { "content": "Data 1" } }],
-            [{ "type": "text", "text": { "content": "Data 2" } }],
-            [{ "type": "text", "text": { "content": "Data 3" } }]
-          ]
-        }
-      }
-    ]
+    "children": [/* table_row blocks */]
   }
 }
 ```
 
-- `table_width`: Number of columns
-- `has_column_header`: First row is header
-- `has_row_header`: First column is header
-- Each cell is an array of rich_text objects
+Each `table_row` has `cells` - an array of rich_text arrays.
 
-### Column list and columns
+### Layout blocks
 
-For side-by-side layouts:
+| Type | Key Properties |
+|------|----------------|
+| `column_list` | `children` (array of `column` blocks) |
+| `column` | `children` (any blocks) |
+| `divider` | (empty object) |
+| `table_of_contents` | `color` |
+| `breadcrumb` | (empty object) |
 
-```json
-{
-  "object": "block",
-  "type": "column_list",
-  "column_list": {
-    "children": [
-      {
-        "object": "block",
-        "type": "column",
-        "column": {
-          "children": [
-            {
-              "object": "block",
-              "type": "paragraph",
-              "paragraph": {
-                "rich_text": [{ "type": "text", "text": { "content": "Left column" } }]
-              }
-            }
-          ]
-        }
-      },
-      {
-        "object": "block",
-        "type": "column",
-        "column": {
-          "children": [
-            {
-              "object": "block",
-              "type": "paragraph",
-              "paragraph": {
-                "rich_text": [{ "type": "text", "text": { "content": "Right column" } }]
-              }
-            }
-          ]
-        }
-      }
-    ]
-  }
-}
-```
+### Media blocks
 
-### Image
+| Type | Key Properties |
+|------|----------------|
+| `image` | `type: "external"`, `external.url`, `caption` |
+| `video` | `type: "external"`, `external.url`, `caption` |
+| `pdf` | `type: "external"`, `external.url`, `caption` |
+| `file` | `type: "external"`, `external.url`, `caption`, `name` |
+| `bookmark` | `url`, `caption` |
+| `embed` | `url`, `caption` |
 
-```json
-{
-  "object": "block",
-  "type": "image",
-  "image": {
-    "type": "external",
-    "external": {
-      "url": "https://example.com/image.png"
-    },
-    "caption": [{ "type": "text", "text": { "content": "Image caption" } }]
-  }
-}
-```
+### Advanced blocks
 
-### Bookmark
-
-```json
-{
-  "object": "block",
-  "type": "bookmark",
-  "bookmark": {
-    "url": "https://example.com",
-    "caption": []
-  }
-}
-```
-
-### Embed
-
-```json
-{
-  "object": "block",
-  "type": "embed",
-  "embed": {
-    "url": "https://twitter.com/user/status/123",
-    "caption": []
-  }
-}
-```
-
-### Video
-
-```json
-{
-  "object": "block",
-  "type": "video",
-  "video": {
-    "type": "external",
-    "external": {
-      "url": "https://youtube.com/watch?v=..."
-    },
-    "caption": []
-  }
-}
-```
-
-### PDF
-
-```json
-{
-  "object": "block",
-  "type": "pdf",
-  "pdf": {
-    "type": "external",
-    "external": {
-      "url": "https://example.com/file.pdf"
-    },
-    "caption": []
-  }
-}
-```
-
-### File
-
-```json
-{
-  "object": "block",
-  "type": "file",
-  "file": {
-    "type": "external",
-    "external": {
-      "url": "https://example.com/file.zip"
-    },
-    "caption": [],
-    "name": "file.zip"
-  }
-}
-```
-
-### Equation
-
-```json
-{
-  "object": "block",
-  "type": "equation",
-  "equation": {
-    "expression": "E = mc^2"
-  }
-}
-```
-
-### Synced block
-
-```json
-{
-  "object": "block",
-  "type": "synced_block",
-  "synced_block": {
-    "synced_from": null,
-    "children": [
-      {
-        "object": "block",
-        "type": "paragraph",
-        "paragraph": {
-          "rich_text": [{ "type": "text", "text": { "content": "Synced content" } }]
-        }
-      }
-    ]
-  }
-}
-```
-
-To reference existing synced block:
-```json
-"synced_from": { "block_id": "original-block-uuid" }
-```
-
-### Template button
-
-```json
-{
-  "object": "block",
-  "type": "template",
-  "template": {
-    "rich_text": [{ "type": "text", "text": { "content": "Add new item" } }],
-    "children": [
-      {
-        "object": "block",
-        "type": "to_do",
-        "to_do": {
-          "rich_text": [{ "type": "text", "text": { "content": "New task" } }],
-          "checked": false
-        }
-      }
-    ]
-  }
-}
-```
-
-### Link to page
-
-```json
-{
-  "object": "block",
-  "type": "link_to_page",
-  "link_to_page": {
-    "type": "page_id",
-    "page_id": "page-uuid-here"
-  }
-}
-```
-
-Can also link to database: `"type": "database_id"`
-
-### Child page
-
-```json
-{
-  "object": "block",
-  "type": "child_page",
-  "child_page": {
-    "title": "Subpage title"
-  }
-}
-```
-
-### Child database
-
-```json
-{
-  "object": "block",
-  "type": "child_database",
-  "child_database": {
-    "title": "Database title"
-  }
-}
-```
-
-### Breadcrumb
-
-```json
-{
-  "object": "block",
-  "type": "breadcrumb",
-  "breadcrumb": {}
-}
-```
+| Type | Key Properties |
+|------|----------------|
+| `equation` | `expression` (LaTeX) |
+| `synced_block` | `synced_from`, `children` |
+| `template` | `rich_text`, `children` |
+| `link_to_page` | `type: "page_id"`, `page_id` |
+| `child_page` | `title` |
+| `child_database` | `title` |
 
 ## Rich text formatting
 
@@ -488,9 +113,7 @@ Can also link to database: `"type": "database_id"`
     "underline": false,
     "code": false,
     "color": "default"
-  },
-  "plain_text": "styled text",
-  "href": null
+  }
 }
 ```
 
@@ -498,12 +121,12 @@ Can also link to database: `"type": "database_id"`
 
 | Property | Type | Description |
 |----------|------|-------------|
-| bold | boolean | Bold text |
-| italic | boolean | Italic text |
-| strikethrough | boolean | Strikethrough text |
-| underline | boolean | Underlined text |
-| code | boolean | Inline code style |
-| color | string | Text or background color |
+| `bold` | boolean | Bold text |
+| `italic` | boolean | Italic text |
+| `strikethrough` | boolean | Strikethrough text |
+| `underline` | boolean | Underlined text |
+| `code` | boolean | Inline code style |
+| `color` | string | Text or background color |
 
 ### Colors
 
@@ -513,7 +136,6 @@ Can also link to database: `"type": "database_id"`
 
 ### Links
 
-External link:
 ```json
 {
   "type": "text",
