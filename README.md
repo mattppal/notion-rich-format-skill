@@ -38,8 +38,9 @@ Plus complete rich text formatting:
 ### Claude.ai
 
 1. Zip the `formatting-notion-pages` directory
-2. Go to Settings > Features
-3. Upload the zip file
+2. Go to Settings > Capabilities > Skills
+3. Click '+ Add' button
+4. Upload the zip file
 
 ### Claude Code
 
